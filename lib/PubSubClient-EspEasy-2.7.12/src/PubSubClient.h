@@ -31,7 +31,7 @@
 // Keepalive timeout for default MQTT Broker is 10s
 #ifndef MQTT_KEEPALIVE
 //#define MQTT_KEEPALIVE 10
-#define MQTT_KEEPALIVE 30  // Tasmota v6.5.0.14 enabling AWS-iot
+#define MQTT_KEEPALIVE 60  // Tasmota v6.5.0.14 enabling AWS-iot
 #endif
 
 // MQTT_SOCKET_TIMEOUT: socket timeout interval in Seconds
