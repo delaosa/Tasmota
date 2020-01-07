@@ -1032,7 +1032,7 @@ void HandleRoot(void)
     if (light_type) {
       uint8_t light_subtype = light_type &7;
       if (!Settings.flag3.pwm_multi_channels) {  // SetOption68 0 - Enable multi-channels PWM instead of Color PWM
-        if ((LST_COLDWARM == light_subtype) || (LST_RGBWC == light_subtype)) {
+        if ((LST_COLDWARM == light_subtype) || (LST_RGBCW == light_subtype)) {
 
           WSContentSend_P(HTTP_MSG_SLIDER_GRADIENT,  // Cold Warm
             "a",             // a - Unique HTML id
@@ -2270,16 +2270,18 @@ void HandleUploadLoop(void)
         } else
 #endif
         {
-          if (upload.buf[0] != 0xE9) {
+          if ((upload.buf[0] != 0xE9) && (upload.buf[0] != 0x1F)) {  // 0x1F is gzipped 0xE9
             Web.upload_error = 3;  // Magic byte is not 0xE9
             return;
           }
-          uint32_t bin_flash_size = ESP.magicFlashChipSize((upload.buf[3] & 0xf0) >> 4);
-          if(bin_flash_size > ESP.getFlashChipRealSize()) {
-            Web.upload_error = 4;  // Program flash size is larger than real flash size
-            return;
+          if (0xE9 == upload.buf[0]) {
+            uint32_t bin_flash_size = ESP.magicFlashChipSize((upload.buf[3] & 0xf0) >> 4);
+            if (bin_flash_size > ESP.getFlashChipRealSize()) {
+              Web.upload_error = 4;  // Program flash size is larger than real flash size
+              return;
+            }
+//            upload.buf[2] = 3;  // Force DOUT - ESP8285
           }
-//          upload.buf[2] = 3;  // Force DOUT - ESP8285
         }
       }
     }
